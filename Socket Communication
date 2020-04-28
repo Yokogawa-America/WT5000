@@ -1,0 +1,35 @@
+#include "stdafx.h"
+#include <stdio.h>
+#include <winsock2.h>
+#include <ws2tcpip.h>
+#pragma comment (lib,"Ws2_32.lib")
+int _tmain(int argc, _TCHAR* argv[])
+{
+/* Socket */
+int dstSocket;
+/* sockaddr_in structure */
+struct sockaddr_in dstAddr;
+/* Receive buffer */
+char buffer[200];
+/************************************************************/
+/* Windows Socket API initialization */
+WSADATA data;
+WSAStartup(MAKEWORD(2,0), &data);
+/* Set the sockaddr_in structure */
+memset(&dstAddr, 0, sizeof(dstAddr));
+dstAddr.sin_port = htons(10002);
+dstAddr.sin_family = AF_INET;
+dstAddr.sin_addr.s_addr = inet_addr("192.168.0.1");
+/* Socket generation */
+dstSocket = socket(AF_INET, SOCK_STREAM, 0);
+/* Connection */
+connect(dstSocket, (struct sockaddr *) &dstAddr, sizeof(dstAddr));
+/* Packet transmission */
+send(dstSocket, "*IDN?\n", 6, 0);
+/* Packet reception */
+recv(dstSocket,buffer,200,0);
+/* Windows Socket API closure */
+closesocket(dstSocket);
+WSACleanup();
+return 0;
+}
